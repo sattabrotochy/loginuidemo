@@ -1,10 +1,13 @@
+import 'dart:convert';
+
+import 'package:api_login_denmo/Model/user_info.dart';
 import 'package:api_login_denmo/constants/constants.dart';
 import 'package:api_login_denmo/ui/widgets/custom_shape.dart';
 import 'package:api_login_denmo/ui/widgets/customappbar.dart';
 import 'package:api_login_denmo/ui/widgets/responsive_ui.dart';
 import 'package:api_login_denmo/ui/widgets/textformfield.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 
 
 
@@ -21,6 +24,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _large;
   bool _medium;
 
+  UserModel _userModel;
+
+  TextEditingController firstNameController=TextEditingController();
+  TextEditingController lastNameController=TextEditingController();
+  TextEditingController emailController=TextEditingController();
+  TextEditingController numberController=TextEditingController();
+  TextEditingController passwordController=TextEditingController();
+  GlobalKey<ScaffoldState> key= GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
 
@@ -32,6 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return Material(
       child: Scaffold(
+        key: key,
         body: Container(
           height: _height,
           width: _width,
@@ -158,6 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return CustomTextField(
       keyboardType: TextInputType.text,
       icon: Icons.person,
+      textEditingController: firstNameController,
       hint: "First Name",
     );
   }
@@ -166,6 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return CustomTextField(
       keyboardType: TextInputType.text,
       icon: Icons.person,
+      textEditingController: lastNameController,
       hint: "Last Name",
     );
   }
@@ -174,6 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return CustomTextField(
       keyboardType: TextInputType.emailAddress,
       icon: Icons.email,
+      textEditingController: emailController,
       hint: "Email ID",
     );
   }
@@ -181,6 +197,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget phoneTextFormField() {
     return CustomTextField(
       keyboardType: TextInputType.number,
+      textEditingController: numberController,
       icon: Icons.phone,
       hint: "Mobile Number",
     );
@@ -191,6 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       keyboardType: TextInputType.text,
       obscureText: true,
       icon: Icons.lock,
+      textEditingController: passwordController,
       hint: "Password",
     );
   }
@@ -223,7 +241,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       onPressed: () {
-        print("Routing to your account");
+
+
+        if(firstNameController.toString().isEmpty)
+          {
+            return key.currentState.showSnackBar(SnackBar(content: Text('please enter your First name')));
+          }
+
+        if(lastNameController.toString().isEmpty)
+          {
+            return key.currentState.showSnackBar(SnackBar(content: Text('please enter your Last name')));
+          }
+
+        if(emailController.toString().isEmpty)
+          {
+            return key.currentState.showSnackBar(SnackBar(content: Text('please enter your Email')));
+          }
+
+        if(numberController.toString().isEmpty)
+          {
+
+            return key.currentState.showSnackBar(SnackBar(content: Text('please enter your Number')));
+          }
+
+        if(passwordController.toString().length==8)
+          {
+            print(passwordController);
+            return key.currentState.showSnackBar(SnackBar(content: Text('please enter your password')));
+          }
+
+        else{
+
+
+
+          Registration();
+
+
+
+        }
+
+
       },
       textColor: Colors.white,
       padding: EdgeInsets.all(0.0),
@@ -315,4 +372,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
+  void Registration() async{
+
+    var url="https://newhmanagement.000webhostapp.com/newregistration.php";
+    Map userData={
+      'email': emailController.text,
+      'firstName': firstNameController.text,
+      'lastName': lastNameController.text,
+      'password': passwordController.text,
+      'number': numberController.text.toString(),
+    };
+    print({"$userData"});
+  http.Response response=await http.post(url,body: userData);
+  var data=jsonDecode(response.body);
+  print("data:$data");
+  Navigator.of(context).pop();
+
+
+
+  }
+
+
 }
+
+

@@ -215,6 +215,7 @@ class _SignInScreenState extends State<SignInScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       onPressed: () {
           print("Routing to your account");
+          Navigator.of(context).pushNamed(Home_page);
           Scaffold
               .of(context)
               .showSnackBar(SnackBar(content: Text('Login Successful')));
